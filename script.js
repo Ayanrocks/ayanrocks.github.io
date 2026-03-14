@@ -348,9 +348,9 @@ const Background3DModule = {
         const windowHalfY = window.innerHeight / 2;
 
         document.addEventListener('mousemove', (event) => {
-            // Reduced parallax extent to limit dizzying rotation
-            this.targetX = (event.clientX - windowHalfX) * 0.0003;
-            this.targetY = (event.clientY - windowHalfY) * 0.0003;
+            // Subtle translation extent for parallax instead of rotation
+            this.targetX = (event.clientX - windowHalfX) * 0.002;
+            this.targetY = (event.clientY - windowHalfY) * 0.002;
         });
 
         window.addEventListener('scroll', () => {
@@ -376,10 +376,11 @@ const Background3DModule = {
         // Subtle floating movement
         this.particles2.position.y = Math.sin(elapsedTime * 0.5) * 0.5;
 
-        // Parallax addition (moves the camera slightly based on mouse, slowed interpolation)
+        // Parallax addition (moves the camera sideways smoothly based on mouse)
+        // We remove 'camera.lookAt(scene.position)' to avoid the "spinning" illusion when 
+        // the camera revolves around the origin. Now it's just a clean, uniform translation.
         this.camera.position.x += (this.targetX - this.camera.position.x) * 0.02;
         this.camera.position.y += (-this.targetY - this.camera.position.y) * 0.02;
-        this.camera.lookAt(this.scene.position);
 
         // Scroll influence (tumbles the cloud as you scroll)
         this.group.rotation.z = this.scrollY * 0.0005;
