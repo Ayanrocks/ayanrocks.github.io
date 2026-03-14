@@ -199,35 +199,53 @@ if (canvas && window.THREE) {
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-    // Create a data-flow particle system (instead of the central sun)
-    const particleCount = 2000;
+    // Create a data-flow particle system representing a 3D sphere
+    const particleCount = 200; // Reduced by 10x
     const geometry = new THREE.BufferGeometry();
     const vertices = [];
 
     for (let i = 0; i < particleCount; i++) {
-        // Spread particles across a wide volume
-        const x = THREE.MathUtils.randFloatSpread(50);
-        const y = THREE.MathUtils.randFloatSpread(50);
-        const z = THREE.MathUtils.randFloatSpread(50);
+        // Distribute particles to form a spherical volume
+        const radius = 30 * Math.cbrt(Math.random());
+        const theta = Math.random() * 2 * Math.PI;
+        const phi = Math.acos(2 * Math.random() - 1);
+        const x = radius * Math.sin(phi) * Math.cos(theta);
+        const y = radius * Math.sin(phi) * Math.sin(theta);
+        const z = radius * Math.cos(phi);
         vertices.push(x, y, z);
     }
 
     geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
 
-    // Material 1: Blue particles
+    // Create Circular Texture for true "dots" instead of squares
+    const circleCanvas = document.createElement('canvas');
+    circleCanvas.width = 32;
+    circleCanvas.height = 32;
+    const ctx = circleCanvas.getContext('2d');
+    ctx.beginPath();
+    ctx.arc(16, 16, 15, 0, 2 * Math.PI);
+    ctx.fillStyle = '#ffffff';
+    ctx.fill();
+    const circleTexture = new THREE.CanvasTexture(circleCanvas);
+
+    // Material 1: Darker #888 dots
     const material1 = new THREE.PointsMaterial({
-        color: 0x4059ad,
+        color: 0x222222,
         size: 0.15,
+        map: circleTexture,
         transparent: true,
+        alphaTest: 0.01,
         opacity: 0.6,
         sizeAttenuation: true
     });
 
-    // Material 2: Yellow particles (larger, sparse)
+    // Material 2: Slightly larger #888 points
     const material2 = new THREE.PointsMaterial({
-        color: 0xF4B942,
-        size: 0.3,
+        color: 0x444444,
+        size: 0.25,
+        map: circleTexture,
         transparent: true,
+        alphaTest: 0.01,
         opacity: 0.8,
         sizeAttenuation: true
     });
@@ -235,14 +253,17 @@ if (canvas && window.THREE) {
     // Create two interwoven point clouds
     const particles1 = new THREE.Points(geometry, material1);
 
-    // Create a second geometry with fewer particles for the yellow highlights
+    // Create a second geometry with fewer particles for highlights
     const geometry2 = new THREE.BufferGeometry();
     const vertices2 = [];
-    for (let i = 0; i < 500; i++) {
+    for (let i = 0; i < 50; i++) { // Reduced by 10x
+        const radius = 25 * Math.cbrt(Math.random());
+        const theta = Math.random() * 2 * Math.PI;
+        const phi = Math.acos(2 * Math.random() - 1);
         vertices2.push(
-            THREE.MathUtils.randFloatSpread(40),
-            THREE.MathUtils.randFloatSpread(40),
-            THREE.MathUtils.randFloatSpread(40)
+            radius * Math.sin(phi) * Math.cos(theta),
+            radius * Math.sin(phi) * Math.sin(theta),
+            radius * Math.cos(phi)
         );
     }
     geometry2.setAttribute('position', new THREE.Float32BufferAttribute(vertices2, 3));

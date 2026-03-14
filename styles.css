@@ -3,20 +3,26 @@
 
 :root {
     /* Provided Colors */
-    --color-primary: #F4B942;
-    --color-primary-dark: #d99f2a;
-    --color-secondary: #F4B942;
-    --color-blue-dark: #4059ad;
+    --color-primary: #4059ad;
+    --color-secondary: #2a6041;
+    --color-tertiary: #e4c5af;
     --color-blue-light: #6b9ac4;
     --color-mint: #97d8c4;
     --color-offwhite: #eff2f1;
+    --color-error: #ff4444;
 
     /* Light Theme (Default) */
-    --bg-color: #ffffff;
-    --text-primary: #1f2227;
-    --text-secondary: #4b5563;
-    --text-muted: #9ca3af;
-    --border-color: rgba(31, 34, 39, 0.1);
+    --bg-color-start: #ffffff;
+    --bg-color-end: #e6ebf1;
+    /* slight gradient */
+    --text-primary: #000000;
+    /* Increased contrast */
+    --text-secondary: #1a1a1a;
+    --text-muted: #4d4d4d;
+    --border-color: rgba(0, 0, 0, 0.1);
+    --code-bg: rgba(0, 0, 0, 0.05);
+    --code-text: var(--color-primary);
+    --link-color: var(--color-primary);
 
     /* Typography */
     --font-heading: 'Anton', sans-serif;
@@ -28,11 +34,16 @@
 
 /* Dark Theme Override */
 :root.dark-theme {
-    --bg-color: #050814;
-    --text-primary: #eff2f1;
-    --text-secondary: rgba(239, 242, 241, 0.6);
-    --text-muted: rgba(239, 242, 241, 0.4);
-    --border-color: rgba(239, 242, 241, 0.1);
+    --bg-color-start: #0a0f1d;
+    --bg-color-end: #02040a;
+    --text-primary: #ffffff;
+    /* High contrast */
+    --text-secondary: #e0e0e0;
+    --text-muted: #a0a0a0;
+    --border-color: rgba(255, 255, 255, 0.1);
+    --code-bg: rgba(255, 255, 255, 0.1);
+    --code-text: var(--color-mint);
+    --link-color: var(--color-mint);
 }
 
 /* Reset & Base Styles */
@@ -44,20 +55,22 @@
 }
 
 html {
-    background-color: var(--bg-color);
+    background: var(--bg-color-start);
+    background: linear-gradient(135deg, var(--bg-color-start) 0%, var(--bg-color-end) 100%);
     color: var(--text-primary);
     font-size: 16px;
     font-family: var(--font-mono);
-    transition: background-color 0.4s ease, color 0.4s ease;
+    transition: background 0.4s ease, color 0.4s ease;
+    min-height: 100vh;
 }
 
 body {
-    background-color: var(--bg-color);
+    background: transparent;
     overflow-x: hidden;
     position: relative;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    transition: background-color 0.4s ease, color 0.4s ease;
+    transition: color 0.4s ease;
 }
 
 /* --- Removed Atmospheric Overlay --- */
@@ -84,14 +97,15 @@ a:hover {
     pointer-events: none;
     z-index: 10000;
     transform: translate(-50%, -50%);
-    mix-blend-mode: difference;
-    transition: width 0.2s, height 0.2s, min-width 0.2s, min-height 0.2s;
+    transition: width 0.2s, height 0.2s, min-width 0.2s, min-height 0.2s, background-color 0.2s;
 }
 
 .cursor.hover {
     width: 150px;
     height: 150px;
     background-color: var(--color-mint);
+    opacity: 0.15;
+    /* Added opacity so text underneath is visible without blend-modes */
 }
 
 /* 3D Canvas */
@@ -101,7 +115,7 @@ a:hover {
     left: 0;
     width: 100vw;
     height: 100vh;
-    z-index: 0;
+    z-index: -5;
     /* Behind content but above deep bg */
     pointer-events: none;
 }
@@ -279,7 +293,7 @@ a:hover {
 
 .btn:hover {
     background: var(--text-primary);
-    color: var(--bg-color);
+    color: var(--bg-color-start);
 }
 
 .btn-primary {
@@ -289,7 +303,7 @@ a:hover {
 
 .btn-primary:hover {
     background: var(--color-primary);
-    color: var(--bg-color);
+    color: var(--bg-color-start);
 }
 
 /* Projects Section */
@@ -433,8 +447,8 @@ textarea.brutalist-input {
 
 .form-status.error {
     display: block;
-    color: #ff4444;
-    border-color: #ff4444;
+    color: var(--color-error);
+    border-color: var(--color-error);
 }
 
 /* Responsive */
@@ -484,6 +498,8 @@ textarea.brutalist-input {
     flex: 1;
     background-color: var(--color-primary);
     transform-origin: top;
+    margin-right: -1px;
+    /* Overlap to hide subpixel gaps */
     transform: scaleY(1);
     /* Start fully covering the screen */
 }
@@ -540,9 +556,9 @@ textarea.brutalist-input {
 }
 
 .project-description a {
-    color: var(--color-mint);
+    color: var(--link-color);
     text-decoration: none;
-    border-bottom: 1px dotted var(--color-mint);
+    border-bottom: 1px dotted var(--link-color);
     transition: all 0.3s ease;
 }
 
@@ -552,8 +568,8 @@ textarea.brutalist-input {
 }
 
 .project-description code {
-    background: var(--border-color);
-    color: var(--color-mint);
+    background: var(--code-bg);
+    color: var(--code-text);
     padding: 0.2rem 0.4rem;
     border-radius: 4px;
     font-size: 0.9em;
@@ -561,7 +577,7 @@ textarea.brutalist-input {
 }
 
 .project-description pre {
-    background: var(--border-color);
+    background: var(--code-bg);
     padding: 1rem;
     border-radius: 4px;
     overflow-x: auto;
