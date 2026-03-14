@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PROJECT // AYANROCKS</title>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
 
@@ -34,15 +35,19 @@
     </div>
     <div class="edge-nav top-right">
         <button id="theme-toggle" class="hover-link"
-            style="background:none; border:none; outline:none; font:inherit; color:inherit;">DARK / LIGHT</button>
-        <a href="index.html#projects" class="hover-link">PROJECTS</a>
-        <a href="contact.html" class="hover-link">CONTACT</a>
+            style="background:none; border:none; outline:none; font:inherit; color:inherit; display:flex; align-items:center; gap:0.5rem;">DARK
+            / LIGHT <i class="ri-contrast-2-line"></i></button>
+        <a href="index.html#projects" class="hover-link" style="display:flex; align-items:center; gap:0.5rem;">PROJECTS
+            <i class="ri-archive-line"></i></a>
+        <a href="contact.html" class="hover-link" style="display:flex; align-items:center; gap:0.5rem;">CONTACT <i
+                class="ri-mail-line"></i></a>
     </div>
     <div class="edge-nav bottom-left">
         <span id="year" class="year"></span> / LATEST.
     </div>
     <div class="edge-nav left-vertical hover-link">
-        <a href="https://github.com/Ayanrocks" target="_blank">GITHUB / AYANROCKS</a>
+        <a href="https://github.com/Ayanrocks" target="_blank"
+            style="display:flex; align-items:center; gap:0.5rem;">GITHUB / AYANROCKS <i class="ri-github-fill"></i></a>
     </div>
     <div class="edge-nav right-vertical">
         SOFTWARE ENGINEER
@@ -85,19 +90,11 @@
                         style="border-left: 1px solid var(--border-color); padding-left: 2rem; display: flex; flex-direction: column; gap: 1.5rem; position: sticky; top: 120px;">
                         <a id="project-visit-btn" href="#" target="_blank" class="btn btn-primary hover-link"
                             style="text-align: center; width: 100%;">
-                            VISIT SITE <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                                style="vertical-align: middle; margin-bottom: 2px; margin-left: 5px;">
-                                <path d="M7 17l9.2-9.2M17 17V7H7" />
-                            </svg>
+                            VISIT SITE <i class="ri-external-link-line"></i>
                         </a>
                         <a id="project-github-btn" href="#" target="_blank" class="btn hover-link"
                             style="text-align: center; width: 100%;">
-                            GITHUB REPO <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
-                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                                style="vertical-align: middle; margin-bottom: 2px; margin-left: 5px;">
-                                <path d="M7 17l9.2-9.2M17 17V7H7" />
-                            </svg>
+                            GITHUB REPO <i class="ri-github-fill"></i>
                         </a>
 
                         <div class="meta-data-box"
@@ -145,6 +142,7 @@
     <!-- Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollToPlugin.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="script.js"></script>

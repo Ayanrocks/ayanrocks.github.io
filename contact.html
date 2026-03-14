@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CONTACT // AYANROCKS</title>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
 
@@ -34,9 +35,13 @@
     </div>
     <div class="edge-nav top-right">
         <button id="theme-toggle" class="hover-link"
-            style="background:none; border:none; outline:none; font:inherit; color:inherit;">DARK / LIGHT</button>
-        <a href="index.html#projects" class="hover-link">PROJECTS</a>
-        <a href="contact.html" class="hover-link" style="color: var(--color-primary);">CONTACT</a>
+            style="background:none; border:none; outline:none; font:inherit; color:inherit; display:flex; align-items:center; gap:0.5rem;">DARK
+            / LIGHT <i class="ri-contrast-2-line"></i></button>
+        <a href="index.html#projects" class="hover-link" style="display:flex; align-items:center; gap:0.5rem;">PROJECTS
+            <i class="ri-archive-line"></i></a>
+        <a href="contact.html" class="hover-link"
+            style="color: var(--color-primary); display:flex; align-items:center; gap:0.5rem;">CONTACT <i
+                class="ri-mail-line"></i></a>
     </div>
     <div class="edge-nav bottom-left">
         <span id="year" class="year"></span> / LATEST.
@@ -62,7 +67,7 @@
                         placeholder="TRANSMIT MESSAGE..."></textarea>
 
                     <button type="submit" class="btn btn-primary hover-link" style="width: 100%; margin-top: 2rem;">SEND
-                        SECURE PING</button>
+                        SECURE PING <i class="ri-send-plane-fill"></i></button>
 
                     <div id="form-msg" class="form-status"></div>
                 </form>
@@ -80,6 +85,7 @@
     <!-- Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollToPlugin.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="script.js"></script>
     <script src="contact.js"></script>

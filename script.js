@@ -3,7 +3,7 @@
  * Brutalist / Atmospheric aesthetic logic.
  */
 
-gsap.registerPlugin(ScrollTrigger);
+gsap.registerPlugin(ScrollTrigger, window.ScrollToPlugin);
 
 // --- Page Transitions ---
 const transitionBars = document.querySelectorAll('.transition-bars .bar');
@@ -40,6 +40,17 @@ if (transitionBars.length > 0) {
                     window.location.href = targetUrl;
                 }
             });
+        } else if (href && href.startsWith('#') && href.length > 1) {
+            // Smooth scroll for internal links
+            e.preventDefault();
+            const target = document.querySelector(href);
+            if (target && window.ScrollToPlugin) {
+                gsap.to(window, {
+                    duration: 1,
+                    scrollTo: { y: target, offsetY: 80, autoKill: false },
+                    ease: "power3.inOut"
+                });
+            }
         }
     });
 }
@@ -54,13 +65,48 @@ if (currentTheme) {
 }
 
 if (themeToggleBtn) {
-    themeToggleBtn.addEventListener('click', () => {
-        document.documentElement.classList.toggle('dark-theme');
-        let theme = 'light-theme';
-        if (document.documentElement.classList.contains('dark-theme')) {
-            theme = 'dark-theme';
+    themeToggleBtn.addEventListener('click', async (e) => {
+        const toggleThemeLogic = () => {
+            document.documentElement.classList.toggle('dark-theme');
+            let theme = 'light-theme';
+            if (document.documentElement.classList.contains('dark-theme')) {
+                theme = 'dark-theme';
+            }
+            localStorage.setItem('theme', theme);
+        };
+
+        if (!document.startViewTransition) {
+            toggleThemeLogic();
+            return;
         }
-        localStorage.setItem('theme', theme);
+
+        const x = e.clientX || window.innerWidth / 2;
+        const y = e.clientY || window.innerHeight / 2;
+
+        const endRadius = Math.hypot(
+            Math.max(x, window.innerWidth - x),
+            Math.max(y, window.innerHeight - y)
+        );
+
+        const transition = document.startViewTransition(() => {
+            toggleThemeLogic();
+        });
+
+        await transition.ready;
+
+        document.documentElement.animate(
+            {
+                clipPath: [
+                    `circle(0px at ${x}px ${y}px)`,
+                    `circle(${endRadius}px at ${x}px ${y}px)`
+                ]
+            },
+            {
+                duration: 800,
+                easing: 'cubic-bezier(0.4, 0, 0.2, 1)',
+                pseudoElement: '::view-transition-new(root)'
+            }
+        );
     });
 }
 
@@ -150,7 +196,7 @@ async function fetchGitHubProjects() {
             card.innerHTML = `
                 <div>
                     <span class="project-lang" style="margin-bottom: 0.5rem; display: block;">NO. ${numStr} // ${repo.language || 'SYS'}</span>
-                    <h3 class="project-name">${repo.name}</h3>
+                    <h3 class="project-name">${repo.name} <i class="ri-arrow-right-up-line"></i></h3>
                 </div>
                 <div class="project-meta">
                     <p class="project-desc">${repo.description || 'INTERNAL SYSTEMS DATA ARCHIVE. REDACTED.'}</p>
