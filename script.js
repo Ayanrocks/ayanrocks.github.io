@@ -17,31 +17,30 @@ if (transitionBars.length > 0) {
         ease: "power4.inOut"
     });
 
-    // Intercept navigation links
-    document.querySelectorAll('a').forEach(link => {
-        link.addEventListener('click', e => {
-            const href = link.getAttribute('href');
+    // Intercept navigation links using event delegation for dynamic elements
+    document.body.addEventListener('click', e => {
+        const link = e.target.closest('a');
+        if (!link) return;
 
-            // Check if it's an internal link and not just a hash
-            if (href && !href.startsWith('http') && !href.startsWith('#') && link.target !== '_blank') {
-                e.preventDefault();
-                const targetUrl = link.href;
+        const href = link.getAttribute('href');
 
-                // Animate bars down to cover the screen
-                gsap.set(transitionBars, { transformOrigin: "top", scaleY: 0 });
-                gsap.to(transitionBars, {
-                    scaleY: 1,
-                    duration: 0.8,
-                    stagger: 0.1,
-                    ease: "power4.inOut",
-                    onComplete: () => {
-                        window.location.href = targetUrl;
-                    }
-                });
-            } else if (href && href.startsWith('#')) {
-                // Let native smooth scrolling handle hash links or use GSAP ScrollTo
-            }
-        });
+        // Check if it's an internal link and not just a hash
+        if (href && !href.startsWith('http') && !href.startsWith('#') && link.target !== '_blank') {
+            e.preventDefault();
+            const targetUrl = link.href;
+
+            // Animate bars down to cover the screen
+            gsap.set(transitionBars, { transformOrigin: "top", scaleY: 0 });
+            gsap.to(transitionBars, {
+                scaleY: 1,
+                duration: 0.8,
+                stagger: 0.1,
+                ease: "power4.inOut",
+                onComplete: () => {
+                    window.location.href = targetUrl;
+                }
+            });
+        }
     });
 }
 
@@ -144,8 +143,8 @@ async function fetchGitHubProjects() {
         displayRepos.forEach((repo, index) => {
             const numStr = (index + 1).toString().padStart(2, '0');
             const card = document.createElement('a');
-            card.href = repo.html_url;
-            card.target = '_blank';
+            card.href = `project.html?repo=${repo.name}`;
+            card.target = '_self';
             card.className = 'project-row hover-link';
 
             card.innerHTML = `

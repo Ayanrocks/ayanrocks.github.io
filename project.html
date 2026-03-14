@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PROJECT // AYANROCKS</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <!-- Page Transition Bars -->
+    <div class="transition-bars">
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+    </div>
+
+    <!-- Custom Cursor -->
+    <div class="cursor"></div>
+
+    <!-- 3D Canvas Background -->
+    <canvas id="webgl-canvas"></canvas>
+
+    <!-- Technical Borders -->
+    <div class="border-top"></div>
+    <div class="border-bottom"></div>
+    <div class="border-left"></div>
+    <div class="border-right"></div>
+
+    <!-- Edge Navigation -->
+    <div class="edge-nav top-left hover-link">
+        <a href="index.html">AR.</a>
+    </div>
+    <div class="edge-nav top-right">
+        <button id="theme-toggle" class="hover-link"
+            style="background:none; border:none; outline:none; font:inherit; color:inherit;">DARK / LIGHT</button>
+        <a href="index.html#projects" class="hover-link">PROJECTS</a>
+        <a href="contact.html" class="hover-link">CONTACT</a>
+    </div>
+    <div class="edge-nav bottom-left">
+        <span id="year" class="year"></span> / LATEST.
+    </div>
+    <div class="edge-nav left-vertical hover-link">
+        <a href="https://github.com/Ayanrocks" target="_blank">GITHUB / AYANROCKS</a>
+    </div>
+    <div class="edge-nav right-vertical">
+        SOFTWARE ENGINEER
+    </div>
+
+    <!-- Smooth Scroll Wrapper -->
+    <div class="smooth-scroll-wrapper">
+        <section class="section project-detail-section" style="padding-top: 20vh;">
+            <div class="massive-text" data-speed="0.2" id="bg-repo-name" style="top: 20%; left: 50%;">PROJECT</div>
+
+            <div class="container" style="width: 100%; display: flex; flex-direction: column; gap: 2rem;">
+                <span class="section-label" id="project-label">01 // PROJECT_DATA</span>
+
+                <h1 class="hero-title" id="project-title"
+                    style="font-size: clamp(3rem, 6vw, 7rem); margin-bottom: 0px; text-transform: uppercase;">LOADING...
+                </h1>
+
+                <div class="project-content-grid"
+                    style="display: grid; grid-template-columns: 1fr 300px; gap: 4rem; align-items: start; margin-top: 2rem;">
+
+                    <!-- Left: Image and Description -->
+                    <div class="project-main">
+                        <div id="project-image-container"
+                            style="width: 100%; min-height: 400px; background: var(--border-color); margin-bottom: 2rem; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative;">
+                            <img id="project-image" src="" alt="Project Image"
+                                style="width: 100%; height: 100%; object-fit: cover; display: none;">
+                            <span id="project-image-fallback"
+                                style="color: var(--text-muted); font-family: var(--font-mono); letter-spacing: 2px;">[
+                                IMAGE PREVIEW ]</span>
+                        </div>
+
+                        <div class="project-description" id="project-description"
+                            style="font-family: var(--font-mono); line-height: 1.8; color: var(--text-secondary); font-size: 1.1rem; font-weight: 400; padding-bottom: 4rem;">
+                            FETCHING README ARCHIVE...
+                        </div>
+                    </div>
+
+                    <!-- Right: Metadata & Action -->
+                    <div class="project-sidebar"
+                        style="border-left: 1px solid var(--border-color); padding-left: 2rem; display: flex; flex-direction: column; gap: 1.5rem; position: sticky; top: 120px;">
+                        <a id="project-visit-btn" href="#" target="_blank" class="btn btn-primary hover-link"
+                            style="text-align: center; width: 100%;">
+                            VISIT SITE <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                style="vertical-align: middle; margin-bottom: 2px; margin-left: 5px;">
+                                <path d="M7 17l9.2-9.2M17 17V7H7" />
+                            </svg>
+                        </a>
+                        <a id="project-github-btn" href="#" target="_blank" class="btn hover-link"
+                            style="text-align: center; width: 100%;">
+                            GITHUB REPO <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                style="vertical-align: middle; margin-bottom: 2px; margin-left: 5px;">
+                                <path d="M7 17l9.2-9.2M17 17V7H7" />
+                            </svg>
+                        </a>
+
+                        <div class="meta-data-box"
+                            style="display: flex; flex-direction: column; gap: 1.5rem; margin-top: 2rem;">
+                            <div>
+                                <span
+                                    style="color: var(--color-mint); font-size: 0.8rem; display: block; margin-bottom: 0.3rem;">LANGUAGE</span>
+                                <strong id="project-lang"
+                                    style="font-family: var(--font-heading); font-size: 1.5rem; letter-spacing: 2px;">...</strong>
+                            </div>
+                            <div>
+                                <span
+                                    style="color: var(--color-mint); font-size: 0.8rem; display: block; margin-bottom: 0.3rem;">STARS</span>
+                                <strong id="project-stars"
+                                    style="font-family: var(--font-heading); font-size: 1.5rem; letter-spacing: 2px;">...</strong>
+                            </div>
+                            <div>
+                                <span
+                                    style="color: var(--color-mint); font-size: 0.8rem; display: block; margin-bottom: 0.3rem;">FORKS</span>
+                                <strong id="project-forks"
+                                    style="font-family: var(--font-heading); font-size: 1.5rem; letter-spacing: 2px;">...</strong>
+                            </div>
+                            <div>
+                                <span
+                                    style="color: var(--color-mint); font-size: 0.8rem; display: block; margin-bottom: 0.3rem;">LAST
+                                    UPDATE</span>
+                                <strong id="project-update"
+                                    style="font-family: var(--font-mono); font-size: 1rem;">...</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Site Footer -->
+        <footer
+            style="padding: 2rem; text-align: center; color: var(--text-muted); font-size: 0.8rem; letter-spacing: 1px; border-top: 1px solid var(--border-color); margin: 0 2vw;">
+            <p>DESIGNED & ENGINEERED WITH <span style="color: var(--color-primary);">&hearts;</span> BY AYAN BANERJEE
+                &copy; <span class="year"></span></p>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="script.js"></script>
+    <script src="project.js"></script>
+</body>
+
+</html>
