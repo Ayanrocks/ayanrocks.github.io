@@ -3,6 +3,14 @@
  * Brutalist / Atmospheric aesthetic logic.
  */
 
+// --- CONFIGURATION & CONSTANTS ---
+const APP_COLORS = {
+    particleFill: '#ffffff',
+    particleCore: 0x222222,
+    particleHighlight: 0x444444,
+    errorText: 'red'
+};
+
 gsap.registerPlugin(ScrollTrigger, window.ScrollToPlugin);
 
 // --- Page Transitions ---
@@ -223,153 +231,162 @@ async function fetchGitHubProjects() {
 
     } catch (error) {
         console.error('Error fetching GitHub projects:', error);
-        projectsList.innerHTML = '<div style="color: red; padding: 2rem 0;">ERROR: FAILED TO PARSE ARCHIVES.</div>';
+        projectsList.innerHTML = `<div style="color: ${APP_COLORS.errorText}; padding: 2rem 0;">ERROR: FAILED TO PARSE ARCHIVES.</div>`;
     }
 }
 
 fetchGitHubProjects();
 
 
-// --- Three.js 3D Background (Massive Central Object) ---
-const canvas = document.getElementById('webgl-canvas');
-if (canvas && window.THREE) {
-    const scene = new THREE.Scene();
+// --- Three.js 3D Background Module ---
+const Background3DModule = {
+    canvasId: 'webgl-canvas',
+    scene: null,
+    camera: null,
+    renderer: null,
+    group: null,
+    particles2: null,
+    clock: null,
+    targetX: 0,
+    targetY: 0,
+    scrollY: 0,
 
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer({
-        canvas: canvas,
-        alpha: true,
-        antialias: true
-    });
+    init() {
+        const canvas = document.getElementById(this.canvasId);
+        if (!canvas || !window.THREE) return;
 
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        this.setupScene(canvas);
+        this.createParticles();
+        this.addEventListeners();
 
-    // Create a data-flow particle system representing a 3D sphere
-    const particleCount = 200; // Reduced by 10x
-    const geometry = new THREE.BufferGeometry();
-    const vertices = [];
+        this.clock = new THREE.Clock();
+        this.animate();
+    },
 
-    for (let i = 0; i < particleCount; i++) {
-        // Distribute particles to form a spherical volume
-        const radius = 30 * Math.cbrt(Math.random());
-        const theta = Math.random() * 2 * Math.PI;
-        const phi = Math.acos(2 * Math.random() - 1);
-        const x = radius * Math.sin(phi) * Math.cos(theta);
-        const y = radius * Math.sin(phi) * Math.sin(theta);
-        const z = radius * Math.cos(phi);
-        vertices.push(x, y, z);
-    }
+    setupScene(canvas) {
+        this.scene = new THREE.Scene();
+        this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 
-    geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+        this.renderer = new THREE.WebGLRenderer({
+            canvas: canvas,
+            alpha: true,
+            antialias: true
+        });
 
-    // Create Circular Texture for true "dots" instead of squares
-    const circleCanvas = document.createElement('canvas');
-    circleCanvas.width = 32;
-    circleCanvas.height = 32;
-    const ctx = circleCanvas.getContext('2d');
-    ctx.beginPath();
-    ctx.arc(16, 16, 15, 0, 2 * Math.PI);
-    ctx.fillStyle = '#ffffff';
-    ctx.fill();
-    const circleTexture = new THREE.CanvasTexture(circleCanvas);
+        this.renderer.setSize(window.innerWidth, window.innerHeight);
+        this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    },
 
-    // Material 1: Darker #888 dots
-    const material1 = new THREE.PointsMaterial({
-        color: 0x222222,
-        size: 0.15,
-        map: circleTexture,
-        transparent: true,
-        alphaTest: 0.01,
-        opacity: 0.6,
-        sizeAttenuation: true
-    });
+    createCircleTexture() {
+        const circleCanvas = document.createElement('canvas');
+        circleCanvas.width = 32;
+        circleCanvas.height = 32;
+        const ctx = circleCanvas.getContext('2d');
+        ctx.beginPath();
+        ctx.arc(16, 16, 15, 0, 2 * Math.PI);
+        ctx.fillStyle = APP_COLORS.particleFill;
+        ctx.fill();
+        return new THREE.CanvasTexture(circleCanvas);
+    },
 
-    // Material 2: Slightly larger #888 points
-    const material2 = new THREE.PointsMaterial({
-        color: 0x444444,
-        size: 0.25,
-        map: circleTexture,
-        transparent: true,
-        alphaTest: 0.01,
-        opacity: 0.8,
-        sizeAttenuation: true
-    });
+    createParticleLayer(count, radiusMax, materialParams) {
+        const geometry = new THREE.BufferGeometry();
+        const vertices = [];
 
-    // Create two interwoven point clouds
-    const particles1 = new THREE.Points(geometry, material1);
+        for (let i = 0; i < count; i++) {
+            const radius = radiusMax * Math.cbrt(Math.random());
+            const theta = Math.random() * 2 * Math.PI;
+            const phi = Math.acos(2 * Math.random() - 1);
+            vertices.push(
+                radius * Math.sin(phi) * Math.cos(theta),
+                radius * Math.sin(phi) * Math.sin(theta),
+                radius * Math.cos(phi)
+            );
+        }
 
-    // Create a second geometry with fewer particles for highlights
-    const geometry2 = new THREE.BufferGeometry();
-    const vertices2 = [];
-    for (let i = 0; i < 50; i++) { // Reduced by 10x
-        const radius = 25 * Math.cbrt(Math.random());
-        const theta = Math.random() * 2 * Math.PI;
-        const phi = Math.acos(2 * Math.random() - 1);
-        vertices2.push(
-            radius * Math.sin(phi) * Math.cos(theta),
-            radius * Math.sin(phi) * Math.sin(theta),
-            radius * Math.cos(phi)
-        );
-    }
-    geometry2.setAttribute('position', new THREE.Float32BufferAttribute(vertices2, 3));
-    const particles2 = new THREE.Points(geometry2, material2);
+        geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+        const material = new THREE.PointsMaterial(materialParams);
+        return new THREE.Points(geometry, material);
+    },
 
-    const group = new THREE.Group();
-    group.add(particles1);
-    group.add(particles2);
+    createParticles() {
+        const circleTexture = this.createCircleTexture();
 
-    // Position it centrally
-    group.position.set(0, 0, -10);
-    scene.add(group);
+        // 1. Core Particles
+        const particles1 = this.createParticleLayer(200, 30, {
+            color: APP_COLORS.particleCore,
+            size: 0.15,
+            map: circleTexture,
+            transparent: true,
+            alphaTest: 0.01,
+            opacity: 0.6,
+            sizeAttenuation: true
+        });
 
-    // Parallax logic
-    let targetX = 0;
-    let targetY = 0;
-    const windowHalfX = window.innerWidth / 2;
-    const windowHalfY = window.innerHeight / 2;
+        // 2. Highlight Particles
+        this.particles2 = this.createParticleLayer(50, 25, {
+            color: APP_COLORS.particleHighlight,
+            size: 0.25,
+            map: circleTexture,
+            transparent: true,
+            alphaTest: 0.01,
+            opacity: 0.8,
+            sizeAttenuation: true
+        });
 
-    document.addEventListener('mousemove', (event) => {
-        targetX = (event.clientX - windowHalfX) * 0.001;
-        targetY = (event.clientY - windowHalfY) * 0.001;
-    });
+        this.group = new THREE.Group();
+        this.group.add(particles1);
+        this.group.add(this.particles2);
 
-    // Scroll Logic tied to 3D object rotation
-    let scrollY = 0;
-    window.addEventListener('scroll', () => {
-        scrollY = window.scrollY;
-    });
+        // Position it centrally
+        this.group.position.set(0, 0, -10);
+        this.scene.add(this.group);
+    },
 
-    const clock = new THREE.Clock();
+    addEventListeners() {
+        const windowHalfX = window.innerWidth / 2;
+        const windowHalfY = window.innerHeight / 2;
 
-    function animate() {
-        requestAnimationFrame(animate);
+        document.addEventListener('mousemove', (event) => {
+            // Reduced parallax extent to limit dizzying rotation
+            this.targetX = (event.clientX - windowHalfX) * 0.0003;
+            this.targetY = (event.clientY - windowHalfY) * 0.0003;
+        });
 
-        const elapsedTime = clock.getElapsedTime();
+        window.addEventListener('scroll', () => {
+            this.scrollY = window.scrollY;
+        });
 
-        // Constant slow rotation of the point cloud
-        group.rotation.y = elapsedTime * 0.05;
-        group.rotation.x = elapsedTime * 0.02;
+        window.addEventListener('resize', () => {
+            this.camera.aspect = window.innerWidth / window.innerHeight;
+            this.camera.updateProjectionMatrix();
+            this.renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    },
+
+    animate() {
+        requestAnimationFrame(() => this.animate());
+
+        const elapsedTime = this.clock.getElapsedTime();
+
+        // Reverted to original auto-rotation speed
+        this.group.rotation.y = elapsedTime * 0.05;
+        this.group.rotation.x = elapsedTime * 0.02;
 
         // Subtle floating movement
-        particles2.position.y = Math.sin(elapsedTime * 0.5) * 0.5;
+        this.particles2.position.y = Math.sin(elapsedTime * 0.5) * 0.5;
 
-        // Parallax addition (moves the camera slightly based on mouse)
-        camera.position.x += (targetX - camera.position.x) * 0.05;
-        camera.position.y += (-targetY - camera.position.y) * 0.05;
-        camera.lookAt(scene.position);
+        // Parallax addition (moves the camera slightly based on mouse, slowed interpolation)
+        this.camera.position.x += (this.targetX - this.camera.position.x) * 0.02;
+        this.camera.position.y += (-this.targetY - this.camera.position.y) * 0.02;
+        this.camera.lookAt(this.scene.position);
 
         // Scroll influence (tumbles the cloud as you scroll)
-        group.rotation.z = scrollY * 0.0005;
+        this.group.rotation.z = this.scrollY * 0.0005;
 
-        renderer.render(scene, camera);
+        this.renderer.render(this.scene, this.camera);
     }
+};
 
-    animate();
-
-    window.addEventListener('resize', () => {
-        camera.aspect = window.innerWidth / window.innerHeight;
-        camera.updateProjectionMatrix();
-        renderer.setSize(window.innerWidth, window.innerHeight);
-    });
-}
+// Initialize the updated 3D background module
+Background3DModule.init();
