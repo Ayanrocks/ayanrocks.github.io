@@ -6,7 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ayanrocks | A Backend Engineer</title>
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles.css?v=1.1">
+    <script>
+        (function () {
+            const theme = localStorage.getItem('theme');
+            if (theme) document.documentElement.classList.add(theme);
+        })();
+    </script>
 </head>
 
 <body>
@@ -109,7 +115,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollToPlugin.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="script.js"></script>
+    <script src="script.js?v=1.1"></script>
 </body>
 
 </html>

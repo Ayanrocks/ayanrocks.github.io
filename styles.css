@@ -122,7 +122,16 @@ a:hover {
     pointer-events: none;
     z-index: 10000;
     transform: translate(-50%, -50%);
-    transition: width 0.2s, height 0.2s, min-width 0.2s, min-height 0.2s, background-color 0.2s;
+    transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1), height 0.4s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.4s ease, opacity 0.4s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--bg-color-start);
+    font-size: 0.8rem;
+    font-family: var(--font-mono);
+    font-weight: bold;
+    letter-spacing: 2px;
+    overflow: hidden;
 }
 
 .cursor.hover {
@@ -131,6 +140,30 @@ a:hover {
     background-color: var(--color-mint);
     opacity: 0.15;
     /* Added opacity so text underneath is visible without blend-modes */
+}
+
+.cursor.initial-scroll {
+    width: 120px;
+    height: 120px;
+    background-color: var(--color-primary);
+    opacity: 0.9;
+}
+
+.cursor.initial-scroll::after {
+    content: 'SCROLL';
+    animation: pulseText 2s infinite alternate;
+}
+
+@keyframes pulseText {
+    0% {
+        opacity: 0.5;
+        transform: scale(0.95);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1.05);
+    }
 }
 
 /* 3D Canvas */
@@ -330,20 +363,42 @@ a:hover {
     border: 1px solid var(--text-primary);
     color: var(--text-primary);
     background: transparent;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: color 0.4s cubic-bezier(0.4, 0, 0.2, 1), transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     backdrop-filter: blur(5px);
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.btn::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 150%;
+    /* enough to cover */
+    padding-bottom: 150%;
+    /* make it a circle */
+    background: var(--text-primary);
+    border-radius: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: -1;
 }
 
 .btn i {
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform 0.3s cubic, font-size 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     font-size: 1.2em;
 }
 
 .btn:hover {
-    background: var(--text-primary);
     color: var(--bg-color-start);
     transform: translateY(-2px);
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.btn:hover::before {
+    transform: translate(-50%, -50%) scale(1);
 }
 
 .btn:hover i {
@@ -359,10 +414,13 @@ a:hover {
     color: var(--color-primary);
 }
 
-.btn-primary:hover {
+.btn-primary::before {
     background: var(--color-primary);
+}
+
+.btn-primary:hover {
     color: var(--bg-color-start);
-    border-color: transparent;
+    border-color: var(--color-primary);
 }
 
 /* Projects Section */
@@ -462,6 +520,66 @@ a:hover {
     font-size: 0.8rem;
 }
 
+.project-content-grid {
+    display: grid;
+    grid-template-columns: 1fr 280px;
+    gap: 4rem;
+    align-items: start;
+    margin-top: 2rem;
+    padding-right: 8rem;
+    /* increased to clear vertical text */
+}
+
+.project-main {
+    min-width: 0;
+    /* Prevents flex/grid children like <pre> from breaking out of width */
+}
+
+.project-description img {
+    max-width: 100%;
+    height: auto;
+}
+
+.project-sidebar {
+    border-left: 1px solid var(--border-color);
+    padding-left: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    position: sticky;
+    top: 120px;
+}
+
+@media (max-width: 1200px) {
+    .project-content-grid {
+        grid-template-columns: 1fr 220px;
+        gap: 3rem;
+        padding-right: 6rem;
+    }
+}
+
+@media (max-width: 1100px) {
+
+    .edge-nav.left-vertical,
+    .edge-nav.right-vertical {
+        display: none;
+    }
+
+    .project-content-grid {
+        grid-template-columns: 1fr;
+        padding-right: 0;
+    }
+
+    .project-sidebar {
+        border-left: none;
+        padding-left: 0;
+        border-top: 1px solid var(--border-color);
+        padding-top: 2rem;
+        position: relative;
+        top: 0;
+    }
+}
+
 /* Contact Page Enhancements */
 .contact-hero {
     min-height: 100vh;
@@ -549,6 +667,20 @@ textarea.brutalist-input {
 
     .project-meta {
         text-align: left;
+    }
+
+    .project-content-grid {
+        grid-template-columns: 1fr;
+        padding-right: 0;
+    }
+
+    .project-sidebar {
+        border-left: none;
+        padding-left: 0;
+        border-top: 1px solid var(--border-color);
+        padding-top: 2rem;
+        position: relative;
+        top: 0;
     }
 
     .massive-text {

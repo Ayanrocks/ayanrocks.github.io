@@ -6,7 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Project | My Projects</title>
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles.css?v=1.1">
+    <script>
+        (function () {
+            const theme = localStorage.getItem('theme');
+            if (theme) document.documentElement.classList.add(theme);
+        })();
+    </script>
 </head>
 
 <body>
@@ -65,8 +71,7 @@
                     style="font-size: clamp(3rem, 6vw, 7rem); margin-bottom: 0px; text-transform: uppercase;">LOADING...
                 </h1>
 
-                <div class="project-content-grid"
-                    style="display: grid; grid-template-columns: 1fr 300px; gap: 4rem; align-items: start; margin-top: 2rem;">
+                <div class="project-content-grid">
 
                     <!-- Left: Image and Description -->
                     <div class="project-main">
@@ -86,8 +91,7 @@
                     </div>
 
                     <!-- Right: Metadata & Action -->
-                    <div class="project-sidebar"
-                        style="border-left: 1px solid var(--border-color); padding-left: 2rem; display: flex; flex-direction: column; gap: 1.5rem; position: sticky; top: 120px;">
+                    <div class="project-sidebar">
                         <a id="project-visit-btn" href="#" target="_blank" class="btn btn-primary hover-link"
                             style="text-align: center; width: 100%;">
                             VISIT SITE <i class="ri-external-link-line"></i>
@@ -145,8 +149,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollToPlugin.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="script.js"></script>
-    <script src="project.js"></script>
+    <script src="script.js?v=1.1"></script>
+    <script src="project.js?v=1.1"></script>
 </body>
 
 </html>

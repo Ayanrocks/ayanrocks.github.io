@@ -13,18 +13,59 @@ const APP_COLORS = {
 
 gsap.registerPlugin(ScrollTrigger, window.ScrollToPlugin);
 
-// --- Page Transitions ---
+// --- Theme Handling & Page Transitions ---
 const transitionBars = document.querySelectorAll('.transition-bars .bar');
-if (transitionBars.length > 0) {
-    // Reveal page on load by shrinking bars upwards
-    gsap.to(transitionBars, {
-        scaleY: 0,
-        transformOrigin: "bottom",
-        duration: 1,
-        stagger: 0.1,
-        ease: "power4.inOut"
-    });
 
+function applyTheme() {
+    const theme = localStorage.getItem('theme');
+    document.documentElement.classList.remove('dark-theme', 'light-theme');
+    if (theme) {
+        document.documentElement.classList.add(theme);
+        // Only if body has it from old localstorage structure, clean it up
+        document.body.classList.remove('dark-theme', 'light-theme');
+    }
+}
+applyTheme();
+
+function revealPage() {
+    if (transitionBars.length > 0) {
+        gsap.to(transitionBars, {
+            scaleY: 0,
+            transformOrigin: "bottom",
+            duration: 1,
+            stagger: 0.1,
+            ease: "power4.inOut"
+        });
+    }
+}
+
+// Initial load reveal
+revealPage();
+
+// Handle Back/Forward Cache effectively
+window.addEventListener('pageshow', (event) => {
+    applyTheme();
+    if (event.persisted) {
+        revealPage();
+
+        // Ensure cursor state is reset on back
+        const cursor = document.querySelector('.cursor');
+        if (cursor) {
+            cursor.classList.remove('hover');
+            cursor.classList.add('initial-scroll');
+            window.initialInteractionStarted = false;
+        }
+    }
+});
+
+// Sync theme changes universally across tabs
+window.addEventListener('storage', (e) => {
+    if (e.key === 'theme') {
+        applyTheme();
+    }
+});
+
+if (transitionBars.length > 0) {
     // Intercept navigation links using event delegation for dynamic elements
     document.body.addEventListener('click', e => {
         const link = e.target.closest('a');
@@ -65,12 +106,6 @@ if (transitionBars.length > 0) {
 
 // --- Theme Toggle Logic ---
 const themeToggleBtn = document.getElementById('theme-toggle');
-const currentTheme = localStorage.getItem('theme');
-
-if (currentTheme) {
-    document.documentElement.classList.add(currentTheme);
-    document.body.classList.remove('dark-theme', 'light-theme'); // Cleanup old localstorage behavior
-}
 
 if (themeToggleBtn) {
     themeToggleBtn.addEventListener('click', async (e) => {
@@ -122,11 +157,41 @@ if (themeToggleBtn) {
 const cursor = document.querySelector('.cursor');
 let mouseX = window.innerWidth / 2, mouseY = window.innerHeight / 2;
 let cursorX = mouseX, cursorY = mouseY;
+window.initialInteractionStarted = false;
 
 if (cursor) {
+    // Show 'SCROLL' prominently upon entry
+    cursor.classList.add('initial-scroll');
+
+    const removeInitialScroll = () => {
+        if (!window.initialInteractionStarted) {
+            window.initialInteractionStarted = true;
+            cursor.classList.remove('initial-scroll');
+        }
+    };
+
+    let lastX = null;
+    let lastY = null;
+
     document.addEventListener('mousemove', (e) => {
+        if (lastX !== null && lastY !== null) {
+            // Only count as an interaction if the mouse actually moved significantly
+            // This prevents an immediate false-positive interaction on page load
+            if (Math.hypot(e.clientX - lastX, e.clientY - lastY) > 5) {
+                removeInitialScroll();
+            }
+        }
+        lastX = e.clientX;
+        lastY = e.clientY;
         mouseX = e.clientX;
         mouseY = e.clientY;
+    });
+
+    // Listen for direct user interaction rather than 'scroll' to avoid 
+    // the browser's automated scroll restoration from immediately hiding the prompt.
+    const interactionEvents = ['wheel', 'touchmove', 'keydown', 'mousedown'];
+    interactionEvents.forEach(evt => {
+        window.addEventListener(evt, removeInitialScroll, { passive: true });
     });
 
     // Smooth lerp for cursor
