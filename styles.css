@@ -7,7 +7,7 @@
     --color-secondary: #2a6041;
     --color-tertiary: #e4c5af;
     --color-blue-light: #6b9ac4;
-    --color-mint: #97d8c4;
+    --color-mint: #377f56;
     --color-offwhite: #eff2f1;
     --color-error: #ff4444;
 
@@ -42,6 +42,7 @@
     --text-muted: #a0a0a0;
     --border-color: rgba(255, 255, 255, 0.1);
     --code-bg: rgba(255, 255, 255, 0.1);
+    --color-mint: #97d8c4;
     --code-text: var(--color-mint);
     --link-color: var(--color-mint);
 }
@@ -433,7 +434,7 @@ a:hover {
     color: var(--color-mint);
     letter-spacing: 2px;
     margin-bottom: 2rem;
-    border-bottom: 1px solid rgba(151, 216, 196, 0.3);
+    border-bottom: 1px solid color-mix(in srgb, var(--color-mint) 30%, transparent);
     padding-bottom: 0.5rem;
     display: inline-block;
 }
