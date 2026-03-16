@@ -44,20 +44,24 @@ document.addEventListener("DOMContentLoaded", async () => {
         forksEl.textContent = repoData.forks_count;
         updateEl.textContent = new Date(repoData.updated_at).toLocaleDateString();
 
+        const checkImage = (src) => new Promise((resolve, reject) => {
+            const img = new Image();
+            img.onload = () => resolve(src);
+            img.onerror = reject;
+            img.src = src;
+        });
+
         // Strategy to find a cover image:
         // 1. Local assets cover
         // 2. Repo logo.png or icon.png
-        // 3. Fallback to first image in README
+        // 3. Fallback to first non-badge image in README
         
         let finalImgSrc = null;
 
         // 1. Check for local cover image first
         const localCoverUrl = `assets/${repoName}_cover.png`;
         try {
-            const coverRes = await fetch(localCoverUrl, { method: 'HEAD' });
-            if (coverRes.ok) {
-                finalImgSrc = localCoverUrl;
-            }
+            finalImgSrc = await checkImage(localCoverUrl);
         } catch (e) {
             // fast fail
         }
@@ -73,11 +77,8 @@ document.addEventListener("DOMContentLoaded", async () => {
             
             for (const logoUrl of possibleLogos) {
                 try {
-                    const logoRes = await fetch(logoUrl, { method: 'HEAD' });
-                    if (logoRes.ok) {
-                        finalImgSrc = logoUrl;
-                        break;
-                    }
+                    finalImgSrc = await checkImage(logoUrl);
+                    if (finalImgSrc) break;
                 } catch (e) {}
             }
         }
@@ -96,27 +97,24 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
 
         if (readmeText) {
-            // Very simple markdown parsing for images and description
-            // Look for first image: ![alt](url) or <img src="url">
-            const imgMatch = readmeText.match(/!\[.*?\]\((.*?)\)/);
-            const htmlImgMatch = readmeText.match(/<img.*?src="(.*?)".*?>/);
-
             // 3. Fallback to README image if still no cover found
             if (!finalImgSrc) {
-                let imgSrc = null;
-                if (imgMatch && imgMatch[1]) {
-                    imgSrc = imgMatch[1];
-                } else if (htmlImgMatch && htmlImgMatch[1]) {
-                    imgSrc = htmlImgMatch[1];
-                }
-    
-                if (imgSrc) {
-                    // Handle relative paths for GitHub user content
-                    if (!imgSrc.startsWith('http')) {
-                        if (imgSrc.startsWith('./')) imgSrc = imgSrc.substring(2);
-                        imgSrc = `https://raw.githubusercontent.com/${username}/${repoName}/main/${imgSrc}`;
+                const imgRegex = /(!\[.*?\]\((.*?)\)|<img.*?src=["'](.*?)["'].*?>)/g;
+                let match;
+                while ((match = imgRegex.exec(readmeText)) !== null) {
+                    let src = match[2] || match[3];
+                    if (src) {
+                        // ignore common badges
+                        if (src.includes('badge') || src.includes('shields.io') || src.includes('travis-ci') || src.includes('goreportcard') || src.includes('sonarcloud')) {
+                            continue;
+                        }
+                        if (!src.startsWith('http')) {
+                            if (src.startsWith('./')) src = src.substring(2);
+                            src = `https://raw.githubusercontent.com/${username}/${repoName}/main/${src}`;
+                        }
+                        finalImgSrc = src;
+                        break;
                     }
-                    finalImgSrc = imgSrc;
                 }
             }
 
