@@ -44,6 +44,44 @@ document.addEventListener("DOMContentLoaded", async () => {
         forksEl.textContent = repoData.forks_count;
         updateEl.textContent = new Date(repoData.updated_at).toLocaleDateString();
 
+        // Strategy to find a cover image:
+        // 1. Local assets cover
+        // 2. Repo logo.png or icon.png
+        // 3. Fallback to first image in README
+        
+        let finalImgSrc = null;
+
+        // 1. Check for local cover image first
+        const localCoverUrl = `assets/${repoName}_cover.png`;
+        try {
+            const coverRes = await fetch(localCoverUrl, { method: 'HEAD' });
+            if (coverRes.ok) {
+                finalImgSrc = localCoverUrl;
+            }
+        } catch (e) {
+            // fast fail
+        }
+
+        // 2. If no local cover, check repository for logo.png or icon.png
+        if (!finalImgSrc) {
+            const possibleLogos = [
+                `https://raw.githubusercontent.com/${username}/${repoName}/main/logo.png`,
+                `https://raw.githubusercontent.com/${username}/${repoName}/master/logo.png`,
+                `https://raw.githubusercontent.com/${username}/${repoName}/main/icon.png`,
+                `https://raw.githubusercontent.com/${username}/${repoName}/master/icon.png`
+            ];
+            
+            for (const logoUrl of possibleLogos) {
+                try {
+                    const logoRes = await fetch(logoUrl, { method: 'HEAD' });
+                    if (logoRes.ok) {
+                        finalImgSrc = logoUrl;
+                        break;
+                    }
+                } catch (e) {}
+            }
+        }
+
         // Fetch README
         const readmeRes = await fetch(`https://raw.githubusercontent.com/${username}/${repoName}/master/README.md`);
         let readmeText = "";
@@ -63,23 +101,26 @@ document.addEventListener("DOMContentLoaded", async () => {
             const imgMatch = readmeText.match(/!\[.*?\]\((.*?)\)/);
             const htmlImgMatch = readmeText.match(/<img.*?src="(.*?)".*?>/);
 
-            let imgSrc = null;
-            if (imgMatch && imgMatch[1]) {
-                imgSrc = imgMatch[1];
-            } else if (htmlImgMatch && htmlImgMatch[1]) {
-                imgSrc = htmlImgMatch[1];
+            // 3. Fallback to README image if still no cover found
+            if (!finalImgSrc) {
+                let imgSrc = null;
+                if (imgMatch && imgMatch[1]) {
+                    imgSrc = imgMatch[1];
+                } else if (htmlImgMatch && htmlImgMatch[1]) {
+                    imgSrc = htmlImgMatch[1];
+                }
+    
+                if (imgSrc) {
+                    // Handle relative paths for GitHub user content
+                    if (!imgSrc.startsWith('http')) {
+                        if (imgSrc.startsWith('./')) imgSrc = imgSrc.substring(2);
+                        imgSrc = `https://raw.githubusercontent.com/${username}/${repoName}/main/${imgSrc}`;
+                    }
+                    finalImgSrc = imgSrc;
+                }
             }
 
-            if (imgSrc) {
-                // Handle relative paths for GitHub user content
-                if (!imgSrc.startsWith('http')) {
-                    if (imgSrc.startsWith('./')) imgSrc = imgSrc.substring(2);
-                    imgSrc = `https://raw.githubusercontent.com/${username}/${repoName}/main/${imgSrc}`;
-                }
-                imgEl.src = imgSrc;
-                imgEl.style.display = 'block';
-                imgFallbackEl.style.display = 'none';
-            }
+
 
             // Clean up the readme to extract nice text but keep formatting
             let cleanText = readmeText
@@ -97,6 +138,12 @@ document.addEventListener("DOMContentLoaded", async () => {
             }
         } else {
             descEl.textContent = repoData.description || "NO README FOUND FOR THIS ARCHIVE.";
+        }
+
+        if (finalImgSrc) {
+            imgEl.src = finalImgSrc;
+            imgEl.style.display = 'block';
+            imgFallbackEl.style.display = 'none';
         }
 
     } catch (err) {

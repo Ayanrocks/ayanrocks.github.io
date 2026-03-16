@@ -297,10 +297,81 @@ async function fetchGitHubProjects() {
     } catch (error) {
         console.error('Error fetching GitHub projects:', error);
         projectsList.innerHTML = `<div style="color: ${APP_COLORS.errorText}; padding: 2rem 0;">ERROR: FAILED TO PARSE ARCHIVES.</div>`;
+    } finally {
+        ScrollTrigger.refresh();
     }
 }
 
 fetchGitHubProjects();
+
+
+// --- GitHub Skills Fetch ---
+const skillsList = document.getElementById('skills-list');
+
+async function fetchGitHubSkills() {
+    if (!skillsList) return;
+
+    try {
+        const response = await fetch(`https://raw.githubusercontent.com/Ayanrocks/Ayanrocks/master/README.md`);
+        if (!response.ok) throw new Error('Failed to fetch README');
+
+        const textStr = await response.text();
+        
+        const match = textStr.match(/skillicons\.dev\/icons\?i=([a-zA-Z0-9,\-_]+)/);
+        
+        if (match && match[1]) {
+            const skills = match[1].split(',');
+            skillsList.innerHTML = '';
+            skills.forEach(skill => {
+                const skillBadge = document.createElement('div');
+                skillBadge.style.padding = '0.5rem 1.25rem 0.5rem 0.5rem';
+                skillBadge.style.border = '1px solid var(--border-color)';
+                skillBadge.style.color = 'var(--text-main)';
+                skillBadge.style.textTransform = 'uppercase';
+                skillBadge.style.letterSpacing = '2px';
+                skillBadge.style.fontSize = '0.8rem';
+                skillBadge.style.display = 'flex';
+                skillBadge.style.alignItems = 'center';
+                skillBadge.style.gap = '0.75rem';
+                skillBadge.style.borderRadius = '30px';
+                skillBadge.style.background = 'rgba(255, 255, 255, 0.02)';
+
+                const iconUrl = `https://skillicons.dev/icons?i=${skill}`;
+                
+                skillBadge.innerHTML = `
+                    <div style="width: 30px; height: 30px; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #fff;">
+                        <img src="${iconUrl}" alt="${skill}" style="width: 100%; height: 100%; object-fit: cover;" />
+                    </div>
+                    <span>${skill}</span>
+                `;
+                skillsList.appendChild(skillBadge);
+            });
+            
+            // GSAP reveal for skills
+            gsap.from(skillsList.children, {
+                scrollTrigger: {
+                    trigger: skillsList,
+                    start: 'top 90%'
+                },
+                y: 20,
+                opacity: 0,
+                duration: 0.5,
+                stagger: 0.05,
+                ease: 'power3.out'
+            });
+            
+        } else {
+            skillsList.innerHTML = `<div style="color: var(--text-muted); padding: 2rem 0;">NO SKILLS FOUND IN ARCHIVE.</div>`;
+        }
+    } catch (error) {
+        console.error('Error fetching GitHub skills:', error);
+        skillsList.innerHTML = `<div style="color: var(--color-mint); padding: 2rem 0;">ERROR: FAILED TO EXTRACT SKILLS.</div>`;
+    } finally {
+        ScrollTrigger.refresh();
+    }
+}
+
+fetchGitHubSkills();
 
 
 // --- Three.js 3D Background Module ---

@@ -268,14 +268,14 @@ a:hover {
 .edge-nav.left-vertical {
   top: 50%;
   left: calc(var(--padding-edge) + 20px);
-  transform: translateY(-50%) rotate(-90deg);
+  transform: translateY(-50%) rotate(-90deg) translateX(-50%);
   transform-origin: left center;
 }
 
 .edge-nav.right-vertical {
   top: 50%;
   right: calc(var(--padding-edge) + 20px);
-  transform: translateY(-50%) rotate(90deg);
+  transform: translateY(-50%) rotate(90deg) translateX(50%);
   transform-origin: right center;
 }
 
@@ -309,6 +309,28 @@ a:hover {
   display: flex;
   flex-direction: column;
   justify-content: center;
+}
+
+/* Compact sections — don't need a full viewport */
+.skills.section {
+  min-height: auto;
+  padding-top: 8rem;
+  padding-bottom: 20rem; /* Increased spacing to separate from experience */
+  justify-content: flex-start;
+}
+
+.experience.section {
+  min-height: auto;
+  padding-top: 5rem;
+  padding-bottom: 6rem;
+  justify-content: flex-start;
+}
+
+/* Footer CTA section — just enough room for the call-to-action */
+.section.cta-footer {
+  min-height: 50vh;
+  padding-top: 10vh;
+  padding-bottom: 10vh;
 }
 
 /* Hero Section */
