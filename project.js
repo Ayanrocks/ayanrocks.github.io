@@ -31,8 +31,13 @@ document.addEventListener("DOMContentLoaded", async () => {
         titleEl.textContent = repoData.name;
         bgTextEl.textContent = repoData.name;
 
-        if (repoData.homepage && repoData.homepage !== "") {
-            visitBtn.href = repoData.homepage;
+        let homepageUrl = repoData.homepage;
+        if (repoData.name.toLowerCase() === 'better-leetcode') {
+            homepageUrl = "https://marketplace.visualstudio.com/items?itemName=Ayanrocks.better-leetcode";
+        }
+
+        if (homepageUrl && homepageUrl !== "") {
+            visitBtn.href = homepageUrl;
             visitBtn.style.display = 'inline-block';
         } else {
             visitBtn.style.display = 'none';

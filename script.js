@@ -236,46 +236,88 @@ massiveTexts.forEach(text => {
 // --- GitHub Projects Fetch ---
 const projectsList = document.getElementById('projects-list');
 const username = 'Ayanrocks';
-const featuredRepos = ['DataSQuirreL', 'mneme', 'PrismPlay', 'my-coding-fonts', 'remix-ide', 'micro'];
+const orderedProjects = ['better-leetcode', 'mneme', 'DataSQuirreL', 'setup', 'PrismPlay'];
+
+const fallbackData = {
+    'better-leetcode': {
+        name: 'better-leetcode',
+        description: 'Better Leetcode extension for vscode to solve your everyday leetcode problems in vscode itself',
+        language: 'TypeScript',
+        stargazers_count: 1
+    },
+    'mneme': {
+        name: 'mneme',
+        description: 'A clean, minimal CLI-based typing speed tester with real-time analytics and wpm history.',
+        language: 'Go',
+        stargazers_count: 10
+    },
+    'DataSQuirreL': {
+        name: 'DataSQuirreL',
+        description: 'Lightweight database migration and seeding assistant tailored for PostgreSQL environments.',
+        language: 'Go',
+        stargazers_count: 12
+    },
+    'PrismPlay': {
+        name: 'PrismPlay',
+        description: 'Interactive shader playground and canvas webgl playground for audio-visualizer logic.',
+        language: 'JavaScript',
+        stargazers_count: 8
+    }
+};
 
 async function fetchGitHubProjects() {
     if (!projectsList) return;
 
     try {
-        const response = await fetch(`https://api.github.com/users/${username}/repos?sort=updated&per_page=100`);
-        if (!response.ok) throw new Error('Failed to fetch repositories');
-
-        const repos = await response.json();
-
-        const displayRepos = repos.filter(repo => !repo.fork || featuredRepos.includes(repo.name))
-            .filter(repo => featuredRepos.includes(repo.name) || repo.stargazers_count > 0)
-            .sort((a, b) => {
-                const isAFeatured = featuredRepos.includes(a.name) ? 1 : 0;
-                const isBFeatured = featuredRepos.includes(b.name) ? 1 : 0;
-                if (isAFeatured !== isBFeatured) return isBFeatured - isAFeatured;
-                return b.stargazers_count - a.stargazers_count;
-            })
-            .slice(0, 6);
+        let repos = [];
+        try {
+            const response = await fetch(`https://api.github.com/users/${username}/repos?sort=updated&per_page=100`);
+            if (response.ok) {
+                repos = await response.json();
+            }
+        } catch (e) {
+            console.error('Failed to fetch repositories, using fallbacks', e);
+        }
 
         projectsList.innerHTML = '';
 
-        displayRepos.forEach((repo, index) => {
+        orderedProjects.forEach((projName, index) => {
             const numStr = (index + 1).toString().padStart(2, '0');
             const card = document.createElement('a');
-            card.href = `project.html?repo=${repo.name}`;
-            card.target = '_self';
             card.className = 'project-row hover-link';
+            card.target = '_self';
 
-            card.innerHTML = `
-                <div>
-                    <span class="project-lang" style="margin-bottom: 0.5rem; display: block;">NO. ${numStr} // ${repo.language || 'SYS'}</span>
-                    <h3 class="project-name">${repo.name} <i class="ri-arrow-right-up-line"></i></h3>
-                </div>
-                <div class="project-meta">
-                    <p class="project-desc">${repo.description || 'INTERNAL SYSTEMS DATA ARCHIVE. REDACTED.'}</p>
-                    <span class="project-lang">STARS [ ${repo.stargazers_count} ]</span>
-                </div>
-            `;
+            if (projName === 'setup') {
+                card.href = 'setup.html';
+                card.innerHTML = `
+                    <div>
+                        <span class="project-lang" style="margin-bottom: 0.5rem; display: block;">NO. ${numStr} // SYS</span>
+                        <h3 class="project-name">setup <i class="ri-arrow-right-up-line"></i></h3>
+                    </div>
+                    <div class="project-meta">
+                        <p class="project-desc">Personalized development setup featuring curated coding fonts, terminal settings, and custom IDE configurations.</p>
+                        <span class="project-lang">STATUS [ ACTIVE ]</span>
+                    </div>
+                `;
+            } else {
+                const repo = repos.find(r => r.name.toLowerCase() === projName.toLowerCase()) || fallbackData[projName];
+                const displayName = repo ? repo.name : projName;
+                const desc = repo ? repo.description : 'INTERNAL SYSTEMS DATA ARCHIVE. REDACTED.';
+                const lang = repo ? repo.language : 'SYS';
+                const stars = repo ? repo.stargazers_count : 0;
+                
+                card.href = `project.html?repo=${displayName}`;
+                card.innerHTML = `
+                    <div>
+                        <span class="project-lang" style="margin-bottom: 0.5rem; display: block;">NO. ${numStr} // ${lang || 'SYS'}</span>
+                        <h3 class="project-name">${displayName} <i class="ri-arrow-right-up-line"></i></h3>
+                    </div>
+                    <div class="project-meta">
+                        <p class="project-desc">${desc || 'INTERNAL SYSTEMS DATA ARCHIVE. REDACTED.'}</p>
+                        <span class="project-lang">STARS [ ${stars} ]</span>
+                    </div>
+                `;
+            }
 
             projectsList.appendChild(card);
         });
@@ -295,7 +337,7 @@ async function fetchGitHubProjects() {
         });
 
     } catch (error) {
-        console.error('Error fetching GitHub projects:', error);
+        console.error('Error rendering projects:', error);
         projectsList.innerHTML = `<div style="color: ${APP_COLORS.errorText}; padding: 2rem 0;">ERROR: FAILED TO PARSE ARCHIVES.</div>`;
     } finally {
         ScrollTrigger.refresh();

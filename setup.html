@@ -1,0 +1,405 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Setup | Ayanrocks</title>
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css?v=1.6" />
+  <script>
+    (function () {
+      const theme = localStorage.getItem("theme");
+      if (theme) document.documentElement.classList.add(theme);
+    })();
+  </script>
+  <style>
+    .container {
+      width: 100%;
+      padding-left: 10vw;
+      padding-right: 10vw;
+    }
+
+    .setup-header {
+      padding-top: 20vh;
+      margin-bottom: 6rem;
+      position: relative;
+      z-index: 10;
+    }
+
+    .setup-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 10rem;
+      margin-top: 4rem;
+      position: relative;
+      z-index: 10;
+    }
+
+    .setup-item {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 5rem;
+      align-items: center;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 8rem;
+    }
+
+    .setup-item:last-child {
+      border-bottom: none;
+      padding-bottom: 4rem;
+    }
+
+    .setup-item:nth-child(even) {
+      direction: rtl;
+    }
+
+    .setup-item:nth-child(even) .setup-info,
+    .setup-item:nth-child(even) .setup-visual {
+      direction: ltr;
+    }
+
+    .setup-info {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .setup-index {
+      font-size: 0.85rem;
+      color: var(--color-mint);
+      letter-spacing: 3px;
+      font-family: var(--font-mono);
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+
+    .setup-name {
+      font-family: var(--font-heading);
+      font-size: clamp(2.5rem, 5vw, 5rem);
+      text-transform: uppercase;
+      line-height: 1;
+      color: var(--text-primary);
+      margin: 0;
+    }
+
+    .setup-desc {
+      font-size: 1.1rem;
+      color: var(--text-secondary);
+      line-height: 1.8;
+    }
+
+    .setup-specs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-top: 0.5rem;
+    }
+
+    .spec-badge {
+      border: 1px solid var(--border-color);
+      padding: 0.5rem 1rem;
+      font-size: 0.75rem;
+      font-family: var(--font-mono);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      background: rgba(255, 255, 255, 0.02);
+      border-radius: 4px;
+      color: var(--text-muted);
+    }
+
+    .setup-visual {
+      width: 100%;
+      border: 1px solid var(--border-color);
+      background: rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.12);
+      transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.6s ease;
+    }
+
+    .setup-visual:hover {
+      transform: scale(1.02) translateY(-5px);
+      box-shadow: 0 40px 80px rgba(0, 0, 0, 0.2);
+    }
+
+    .setup-visual img {
+      width: 100%;
+      height: auto;
+      display: block;
+      object-fit: cover;
+    }
+
+    .setup-actions {
+      margin-top: 1.5rem;
+      display: flex;
+      gap: 1rem;
+    }
+
+    @media (max-width: 1100px) {
+      .setup-item {
+        grid-template-columns: 1fr;
+        gap: 3.5rem;
+        padding-bottom: 6rem;
+      }
+      .setup-item:nth-child(even) {
+        direction: ltr;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .setup-actions {
+        flex-direction: column;
+        width: 100%;
+      }
+      .setup-actions .btn {
+        width: 100%;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Page Transition Bars -->
+  <div class="transition-bars">
+    <div class="bar"></div>
+    <div class="bar"></div>
+    <div class="bar"></div>
+  </div>
+
+  <!-- Custom Cursor -->
+  <div class="cursor"></div>
+
+  <!-- 3D Canvas Background -->
+  <canvas id="webgl-canvas"></canvas>
+
+  <!-- Technical Borders -->
+  <div class="border-top"></div>
+  <div class="border-bottom"></div>
+  <div class="border-left"></div>
+  <div class="border-right"></div>
+
+  <!-- Edge Navigation -->
+  <div class="edge-nav top-left hover-link">
+    <a href="index.html">AR.</a>
+  </div>
+  <div class="edge-nav top-right">
+    <button id="theme-toggle" class="hover-link" style="
+          background: none;
+          border: none;
+          outline: none;
+          font: inherit;
+          color: inherit;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+        ">
+      <span class="nav-text">DARK / LIGHT</span>
+      <i class="ri-contrast-2-line"></i>
+    </button>
+    <a href="index.html#projects" class="hover-link" style="display: flex; align-items: center; gap: 0.5rem">
+      <span class="nav-text">PROJECTS</span> <i class="ri-archive-line"></i>
+    </a>
+    <a href="contact.html" class="hover-link" style="display: flex; align-items: center; gap: 0.5rem">
+      <span class="nav-text">CONTACT</span> <i class="ri-mail-line"></i>
+    </a>
+  </div>
+  <div class="edge-nav bottom-left">
+    <span id="year" class="year"></span> / LATEST.
+  </div>
+  <div class="edge-nav left-vertical hover-link">
+    <a href="https://github.com/Ayanrocks" target="_blank" style="display: flex; align-items: center; gap: 0.5rem">
+      GITHUB / AYANROCKS <i class="ri-github-fill"></i>
+    </a>
+  </div>
+  <div class="edge-nav right-vertical">SOFTWARE ENGINEER</div>
+
+  <!-- Smooth Scroll Wrapper -->
+  <div class="smooth-scroll-wrapper">
+    <!-- Header Section -->
+    <header class="container setup-header">
+      <span class="section-label">01 // DEVELOPMENT_WORKSPACE</span>
+      <h1 class="hero-title" style="font-size: clamp(3.5rem, 7vw, 8rem); margin-bottom: 1.5rem;">
+        MY SETUP
+      </h1>
+      <p class="hero-desc" style="margin: 0; text-align: left; max-width: 700px;">
+        A showcase of typographic choices, UI interfaces, and workflow tools custom-tailored for peak cognitive output and aesthetic minimalism.
+      </p>
+    </header>
+
+    <!-- Showcase Grid -->
+    <main class="container">
+      <div class="setup-grid">
+        
+        <!-- Item 1: JetBrains Mono -->
+        <section class="setup-item">
+          <div class="setup-info">
+            <span class="setup-index">SPECIMEN.01 // TYPEFACE</span>
+            <h2 class="setup-name">JetBrains Mono</h2>
+            <p class="setup-desc">
+              Designed specifically for developers, JetBrains Mono provides maximum readability under prolonged coding sessions. It features increased letter height, distinct symbol shapes, and code-specific ligatures that reduce eye strain.
+            </p>
+            <div class="setup-specs">
+              <span class="spec-badge">X-Height: Tall</span>
+              <span class="spec-badge">Ligatures: Enabled</span>
+              <span class="spec-badge">License: SIL Open Font</span>
+            </div>
+            <div class="setup-actions">
+              <a href="https://www.jetbrains.com/lp/mono/" target="_blank" class="btn btn-primary hover-link">
+                DOWNLOAD FONT <i class="ri-download-line"></i>
+              </a>
+            </div>
+          </div>
+          <div class="setup-visual hover-link">
+            <img src="assets/JetBrainsMono_screenshot.png" alt="JetBrains Mono Typography Specimen" />
+          </div>
+        </section>
+
+        <!-- Item 2: Input Mono -->
+        <section class="setup-item">
+          <div class="setup-info">
+            <span class="setup-index">SPECIMEN.02 // TYPEFACE</span>
+            <h2 class="setup-name">Input Mono</h2>
+            <p class="setup-desc">
+              Input is a highly modular font system designed specifically for code. It breaks the traditional monospaced rules by offering customized widths, weights, and alternate glyph shapes, allowing developers to craft their ideal reading experience.
+            </p>
+            <div class="setup-specs">
+              <span class="spec-badge">Style: Customizable Monospace</span>
+              <span class="spec-badge">Designed By: David Jonathan Ross</span>
+              <span class="spec-badge">Alternate Glyphs: Proportional option</span>
+            </div>
+            <div class="setup-actions">
+              <a href="https://input.djr.com/" target="_blank" class="btn btn-primary hover-link">
+                OFFICIAL SITE <i class="ri-external-link-line"></i>
+              </a>
+            </div>
+          </div>
+          <div class="setup-visual hover-link">
+            <img src="assets/InputMono_screenshot.png" alt="Input Mono Typography Specimen" />
+          </div>
+        </section>
+
+        <!-- Item 3: iA Writer Mono & Sans -->
+        <section class="setup-item">
+          <div class="setup-info">
+            <span class="setup-index">SPECIMEN.03 // TYPEFACE</span>
+            <h2 class="setup-name">iA Writer Fonts</h2>
+            <p class="setup-desc">
+              Born from the iconic minimalist writing application iA Writer, this suite includes both Mono and Sans variants. Created as a modified version of IBM Plex, it delivers a clean, writer-centric layout that brings editorial structure to code and documentation.
+            </p>
+            <div class="setup-specs">
+              <span class="spec-badge">Family: Mono & Sans</span>
+              <span class="spec-badge">Modified From: IBM Plex</span>
+              <span class="spec-badge">Style: Minimal / Clean</span>
+            </div>
+            <div class="setup-actions">
+              <a href="https://github.com/iaolo/iA-Fonts" target="_blank" class="btn btn-primary hover-link">
+                GET ON GITHUB <i class="ri-github-fill"></i>
+              </a>
+            </div>
+          </div>
+          <div class="setup-visual hover-link">
+            <img src="assets/ia_writer_preview.png" alt="iA Writer Fonts Comparison" />
+          </div>
+        </section>
+
+        <!-- Item 4: Ghostty Terminal -->
+        <section class="setup-item">
+          <div class="setup-info">
+            <span class="setup-index">SPECIMEN.04 // CLI_SHELL</span>
+            <h2 class="setup-name">Ghostty</h2>
+            <p class="setup-desc">
+              Ghostty is a lightning-fast, GPU-accelerated terminal emulator. It focuses on supreme rendering performance, native OS integration, and modern features like rich typography rendering, shaders, and window transparency without sacrificing stability.
+            </p>
+            <div class="setup-specs">
+              <span class="spec-badge">Engine: Metal / OpenGL</span>
+              <span class="spec-badge">Performance: Low Latency</span>
+              <span class="spec-badge">Theme: Native support</span>
+            </div>
+            <div class="setup-actions">
+              <a href="https://ghostty.org/" target="_blank" class="btn btn-primary hover-link">
+                GHOSTTY SITE <i class="ri-external-link-line"></i>
+              </a>
+            </div>
+          </div>
+          <div class="setup-visual hover-link">
+            <img src="assets/ghostty_screenshot.png" alt="Ghostty Terminal Emulator Preview" />
+          </div>
+        </section>
+
+        <!-- Item 5: Antigravity IDE -->
+        <section class="setup-item">
+          <div class="setup-info">
+            <span class="setup-index">SPECIMEN.05 // ENVIRONMENT</span>
+            <h2 class="setup-name">Antigravity IDE</h2>
+            <p class="setup-desc">
+              An AI-augmented coding canvas optimized for advanced agentic software development workflows. With floating contextual panels, zero-friction debugging integration, and visual file mapping, it supports complex logic editing with ease.
+            </p>
+            <div class="setup-specs">
+              <span class="spec-badge">AI Integration: Native Agentic</span>
+              <span class="spec-badge">Workspace: Canvas layout</span>
+              <span class="spec-badge">Speed: Optimized telemetry</span>
+            </div>
+          </div>
+          <div class="setup-visual hover-link">
+            <img src="assets/Antigravity_screenshot.png" alt="Antigravity IDE Editor Interface" />
+          </div>
+        </section>
+
+        <!-- Item 6: VS Code Vesper & Rosé Pine Theme -->
+        <section class="setup-item">
+          <div class="setup-info">
+            <span class="setup-index">SPECIMEN.06 // THEME</span>
+            <h2 class="setup-name">Vesper & Rosé Pine</h2>
+            <p class="setup-desc">
+              A bespoke editor visual layout blending the dark, deep gray tones of the Vesper theme with the warm, pastel highlights of Rosé Pine. Designed for low eye strain under late-night coding sessions while maintaining distinct syntax color separation.
+            </p>
+            <div class="setup-specs">
+              <span class="spec-badge">Contrast: High / Dark</span>
+              <span class="spec-badge">Colors: Warm Gold, Rose, Gold</span>
+              <span class="spec-badge">Base: Vesper + Rosé Pine</span>
+            </div>
+            <div class="setup-actions">
+              <a href="https://marketplace.visualstudio.com/items?itemName=raunofreiberg.vesper" target="_blank" class="btn btn-primary hover-link">
+                VESPER THEME <i class="ri-external-link-line"></i>
+              </a>
+              <a href="https://rosepinetheme.com/" target="_blank" class="btn hover-link">
+                ROSÉ PINE <i class="ri-palette-line"></i>
+              </a>
+            </div>
+          </div>
+          <div class="setup-visual hover-link">
+            <img src="assets/vscode_theme_preview.png" alt="VS Code theme with Vesper and Rosé Pine" />
+          </div>
+        </section>
+
+      </div>
+    </main>
+
+    <!-- Site Footer -->
+    <footer style="
+          padding: 2rem;
+          text-align: center;
+          color: var(--text-muted);
+          font-size: 0.8rem;
+          letter-spacing: 1px;
+          border-top: 1px solid var(--border-color);
+          margin: 6rem 2vw 0 2vw;
+        ">
+      <p>
+        DESIGNED & ENGINEERED WITH
+        <span style="color: var(--color-primary)">&hearts;</span> BY AYAN
+        BANERJEE &copy; <span class="year"></span>
+      </p>
+    </footer>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollToPlugin.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="script.js?v=1.2"></script>
+</body>
+
+</html>
